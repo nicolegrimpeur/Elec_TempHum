@@ -8,11 +8,10 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <xc.h>
-#include "general.h"
-#include "uart.h"
+#include "../ressources/general.h"
 #include "../ressources/spi.h"
-#include "SX1272.h"
-#include "RF_LoRa_868_SO.h"
+#include "../ressources/SX1272.h"
+#include "../ressources/RF_LoRa_868_SO.h"
 
 
 void WriteSXRegister(uint8_t address, uint8_t data) {
@@ -34,60 +33,6 @@ uint8_t ReadSXRegister(uint8_t address) {
     RegValue = SPIReceive(0x00);            // send dummy data and receive register content
     SPI_SS_LAT = SPI_SS_DISABLE;            // disable slave
     return RegValue;
-}
-
-// read REG_OP_MODE register to check operating mode
-// and send information to serial ouput
-void GetMode (void){
-    uint8_t reg, masked_reg;
-    reg = ReadSXRegister(REG_OP_MODE);
-
-    // for debugging: send reg value to terminal
-    UARTWriteStr("REG_OP_MODE = 0x");
-    UARTWriteByteHex(reg);
-
-    masked_reg = reg & 0x80;        // to check bit n�7
-    if (masked_reg)
-    {
-        // MSB of RegOpMode is 1, so mode = LoRa
-        masked_reg = reg & 0x40;        // to check bit n�6
-        if (!masked_reg)
-            UARTWriteStrLn("mode = LoRa");
-        else
-            UARTWriteStrLn("mode = LoRa with FSK registers access");
-    }
-    else
-        // MSB of RegOpMode is 0, so mode = FSK
-        UARTWriteStrLn("mode = FSK");
-
-    masked_reg = reg & 0x07;       // test bits 2-0 of RegOpMode
-    switch (masked_reg){
-        case 0x00:
-            UARTWriteStrLn("sleep mode");
-            break;
-        case 0x01:
-            UARTWriteStrLn("standby mode");
-            break;
-        case 0x02:
-            UARTWriteStrLn("frequency synthesis TX");
-            break;
-        case 0x03:
-            UARTWriteStrLn("TX mode");
-            break;
-        case 0x04:
-            UARTWriteStrLn("frequency synthesis RX");
-            break;
-        case 0x05:
-            UARTWriteStrLn("continuous receive mode");
-            break;
-        case 0x06:
-            UARTWriteStrLn("single receive mode");
-            break;
-        case 0x07:
-            UARTWriteStrLn("Channel Activity Detection");
-            break;
-    }
-
 }
 
 void InitModule (void){

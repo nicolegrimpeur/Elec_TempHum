@@ -94,7 +94,6 @@ int main(int argc, char** argv) {
     WriteSXRegister(REG_OP_MODE, LORA_SLEEP_MODE);      // switch from FSK mode to LoRa mode
     WriteSXRegister(REG_OP_MODE, LORA_STANDBY_MODE);    // STANDBY mode required fot FIFO loading
     __delay_ms(100);
-    GetMode();
 
     // initialize the module
     InitModule();
@@ -110,7 +109,6 @@ int main(int argc, char** argv) {
     // set mode to LoRa continuous RX
     WriteSXRegister(REG_OP_MODE, LORA_RX_CONTINUOUS_MODE);
     __delay_ms(100);                                    // delay required to start oscillator and PLL
-    GetMode();
 
 
     forever {
@@ -121,20 +119,11 @@ int main(int argc, char** argv) {
             reg_val = ReadSXRegister(REG_IRQ_FLAGS);
         }
 
-        // --- for debugging: display IRQ flags ---
-        reg_val = ReadSXRegister(REG_IRQ_FLAGS);
-        // ----------------------------------------
-
         // wait for end of packet reception
         reg_val = ReadSXRegister(REG_IRQ_FLAGS);
         while ((reg_val & 0x40) == 0x00) {                  // check Packet Reception Complete flag (bit n�6)
             reg_val = ReadSXRegister(REG_IRQ_FLAGS);
         }
-
-        // --- for debugging: display IRQ flags ---
-        reg_val = ReadSXRegister(REG_IRQ_FLAGS);
-        // ----------------------------------------
-
 
         // read received data
         RXNumberOfBytes = ReadSXRegister(REG_RX_NB_BYTES);                              // read how many bytes have been received
@@ -142,13 +131,6 @@ int main(int argc, char** argv) {
         for (i = 0; i < RXNumberOfBytes; i++) {
             reg_val = ReadSXRegister(REG_FIFO);       // read FIFO
         }
-
-        // display FIFO information
-        reg_val = ReadSXRegister(REG_FIFO_RX_CURRENT_ADDR);
-        reg_val = ReadSXRegister(REG_RX_NB_BYTES);
-
-        // display RSSI
-        reg_val = ReadSXRegister(REG_PKT_RSSI_VALUE);
 
         // reset all IRQs
         /*    reg_val = ReadSXRegister(REG_IRQ_FLAGS);
