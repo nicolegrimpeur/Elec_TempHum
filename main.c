@@ -1,3 +1,5 @@
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "EndlessLoop"
 #define USE_AND_MASKS
 
 #include <stdio.h>
@@ -150,17 +152,14 @@ int main(int argc, char** argv) {
 
         // reset all IRQs
         /*    reg_val = ReadSXRegister(REG_IRQ_FLAGS);
-            UARTWriteStr("before clear: REG_IRQ_FLAGS = 0x");
-            UARTWriteByteHex(reg_val);
         */
         WriteSXRegister(REG_IRQ_FLAGS, 0xFF);           // clear flags: writing 1 clears flag
 
         /*    // check that flags are actually cleared (useless if not debugging)
             reg_val = ReadSXRegister(REG_IRQ_FLAGS);
-            UARTWriteStr("after clear: REG_IRQ_FLAGS = 0x");
-            UARTWriteByteHex(reg_val);
          */
 
     }       // end of loop forever
 
 }
+#pragma clang diagnostic pop
