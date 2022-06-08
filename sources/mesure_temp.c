@@ -79,41 +79,5 @@
 // CONFIG7H
 #pragma config EBTRB = OFF      // Boot Block Table Read Protection bit (Boot Block (000000-0007FFh) not protected from table reads executed in other blocks)
 
-int main(int argc, char** argv) {
-
-    INT8_T temp;                             // temperature (1 byte)
-    char string[16];
-    char degre[2] = {0xDF, '\0'};            // ASCII code for ° symbol, not known by XC8 compiler, see HD44780 datasheet
-
-    i2c_init();                             // configuration de l'interface I2C
-     _delay(12500);
-
-    strcpy(string, "Temp =   ");
-    strcat(string, degre);
-    strcat(string, "C");
-
-    forever {
-
-        temp = 0;
-
-        _delay(125000);                         // wait for 125000 Tcy = 125000 * 4us = 0.5 s
-
-        i2c_start();                                    // send start condition
-        i2c_write((TC74_ADDRESS << 1) | I2C_WRITE);     // send to slave 7-bit address (1001 101) + WR (0)
-        i2c_write(0x00) ;                               // select temperature register
-        i2c_repStart();                                 // send repeated start condition
-        i2c_write((TC74_ADDRESS << 1) | I2C_READ);      // send to slave 7-bit address (1001 101) + RD (1)
-//        temp = abs(i2c_read());                         // read temperature (only 0 to 99 degrés Celsius)
-        temp = i2c_read();
-        i2c_NAK();                                      // send a NAK (last read)
-        i2c_stop();                                     // send stop condition
-
-        // ici on peut console log la temperature (temp)
-
-        _delay(125000);
-    }
-
-    return (EXIT_SUCCESS);
-}
 
 

@@ -11,6 +11,7 @@
 #include "./ressources/spi.h"
 #include "./ressources/SX1272.h"
 #include "./ressources/RF_LoRa_868_SO.h"
+#include "./ressources/i2c.h"
 
 
 /*****/
@@ -47,8 +48,8 @@
 // CONFIG5L
 #pragma config CP0 = OFF        // Code Protection Block 0 (Block 0 (000800-001FFFh) not code-protected)
 #pragma config CP1 = OFF        // Code Protection Block 1 (Block 1 (002000-003FFFh) not code-protected)
-//#pragma config CP2 = OFF        // Code Protection Block 2 (Block 2 (004000-005FFFh) not code-protected)
-//#pragma config CP3 = OFF        // Code Protection Block 3 (Block 3 (006000-007FFFh) not code-protected)
+#pragma config CP2 = OFF        // Code Protection Block 2 (Block 2 (004000-005FFFh) not code-protected)
+#pragma config CP3 = OFF        // Code Protection Block 3 (Block 3 (006000-007FFFh) not code-protected)
 
 // CONFIG5H
 #pragma config CPB = OFF        // Boot Block Code Protection bit (Boot block (000000-0007FFh) not code-protected)
@@ -57,8 +58,8 @@
 // CONFIG6L
 #pragma config WRT0 = OFF       // Write Protection Block 0 (Block 0 (000800-001FFFh) not write-protected)
 #pragma config WRT1 = OFF       // Write Protection Block 1 (Block 1 (002000-003FFFh) not write-protected)
-//#pragma config WRT2 = OFF       // Write Protection Block 2 (Block 2 (004000-005FFFh) not write-protected)
-//#pragma config WRT3 = OFF       // Write Protection Block 3 (Block 3 (006000-007FFFh) not write-protected)
+#pragma config WRT2 = OFF       // Write Protection Block 2 (Block 2 (004000-005FFFh) not write-protected)
+#pragma config WRT3 = OFF       // Write Protection Block 3 (Block 3 (006000-007FFFh) not write-protected)
 
 // CONFIG6H
 #pragma config WRTC = OFF       // Configuration Register Write Protection bit (Configuration registers (300000-3000FFh) not write-protected)
@@ -68,8 +69,8 @@
 // CONFIG7L
 #pragma config EBTR0 = OFF      // Table Read Protection Block 0 (Block 0 (000800-001FFFh) not protected from table reads executed in other blocks)
 #pragma config EBTR1 = OFF      // Table Read Protection Block 1 (Block 1 (002000-003FFFh) not protected from table reads executed in other blocks)
-//#pragma config EBTR2 = OFF      // Table Read Protection Block 2 (Block 2 (004000-005FFFh) not protected from table reads executed in other blocks)
-//#pragma config EBTR3 = OFF      // Table Read Protection Block 3 (Block 3 (006000-007FFFh) not protected from table reads executed in other blocks)
+#pragma config EBTR2 = OFF      // Table Read Protection Block 2 (Block 2 (004000-005FFFh) not protected from table reads executed in other blocks)
+#pragma config EBTR3 = OFF      // Table Read Protection Block 3 (Block 3 (006000-007FFFh) not protected from table reads executed in other blocks)
 
 // CONFIG7H
 #pragma config EBTRB = OFF      // Boot Block Table Read Protection bit (Boot Block (000000-0007FFh) not protected from table reads executed in other blocks)
@@ -83,9 +84,12 @@ int main(int argc, char** argv) {
     uint8_t RXNumberOfBytes;        // to store the number of bytes received
     uint8_t i;
 
+    INT8_T temp;                // déclaration pour le capteur de température /  temperature (1 byte)
+
     InitRFLoRaPins();           // configure pins for RF Solutions LoRa module
     SPIInit();                  // init SPI
     ResetRFModule();            // reset the RF Solutions LoRa module (should be optional since Power On Reset is implemented)
+    i2c_init();                             // configuration de l'interface I2C
 
 
     // put module in LoRa mode (see SX1272 datasheet page 107)
@@ -112,6 +116,27 @@ int main(int argc, char** argv) {
 
 
     forever {
+
+        //------- code capteur ------------
+        temp = 0;
+
+        _delay(125000);                         // wait for 125000 Tcy = 125000 * 4us = 0.5 s
+
+        i2c_start();                                    // send start condition
+        i2c_write((TC74_ADDRESS << 1) | I2C_WRITE);     // send to slave 7-bit address (1001 101) + WR (0)
+        i2c_write(0x00) ;                               // select temperature register
+        i2c_repStart();                                 // send repeated start condition
+        i2c_write((TC74_ADDRESS << 1) | I2C_READ);      // send to slave 7-bit address (1001 101) + RD (1)
+        //        temp = abs(i2c_read());                         // read temperature (only 0 to 99 degr�s Celsius)
+        temp = i2c_read();
+        i2c_NAK();                                      // send a NAK (last read)
+        i2c_stop();                                     // send stop condition
+
+        // ici on peut console log la temperature (temp)
+
+        _delay(125000);
+        //-------- code capteur -----------
+
 
         // wait for valid header reception
         reg_val = ReadSXRegister(REG_IRQ_FLAGS);
