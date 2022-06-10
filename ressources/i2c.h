@@ -17,7 +17,7 @@
 #define I2C_SCL             LATCbits.RC3            // I2C SCL pin
 #define I2C_SDA             LATCbits.RC4            // I2C SDA pin
 
-#define TC74_ADDRESS        0b01001101              // TC74 address
+#define HIH_ADDRESS         0x27                    // HIH address
 
 #define I2C_READ            READ                    // I2C read mode
 #define I2C_WRITE           WRITE                   // I2C write mode

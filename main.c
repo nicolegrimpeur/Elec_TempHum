@@ -122,17 +122,45 @@ int main(int argc, char** argv) {
 
         _delay(125000);                         // wait for 125000 Tcy = 125000 * 4us = 0.5 s
 
+        // demande de mesures
+        i2c_start();
+        i2c_write((HIH_ADDRESS << 1) | I2C_WRITE);
+        i2c_stop();
+
+        // lecture des mesures effectue
+        i2c_start();
+        i2c_write((HIH_ADDRESS << 1) | I2C_READ);
+        i2c_ACK();
+        i2c_ACK();
+        i2c_ACK();
+        i2c_NAK();
+        i2c_stop();
+
+        // et là normalement tout est dans le SSP1BUF (buffer) avec humidité sur 0x00 et 0x01 ; temp sur 0x02 et 0x03
+
+
+        /*
+        ça on le garde pour le moment mais c'est un protocole pour un modèle différent de capteur (TC74)
+
         i2c_start();                                    // send start condition
-        i2c_write((TC74_ADDRESS << 1) | I2C_WRITE);     // send to slave 7-bit address (1001 101) + WR (0)
+        i2c_write((TC74_ADDRESS << 1) | I2C_READ);     // send to slave 7-bit address (1001 101) + WR (0)
         i2c_write(0x00) ;                               // select temperature register
         i2c_repStart();                                 // send repeated start condition
         i2c_write((TC74_ADDRESS << 1) | I2C_READ);      // send to slave 7-bit address (1001 101) + RD (1)
         //        temp = abs(i2c_read());                         // read temperature (only 0 to 99 degr�s Celsius)
+
+        i2c_ACK();
+        i2c_write((TC74_ADDRESS << 1) | I2C_WRITE);     // send to slave 7-bit address (1001 101) + WR (0)
+        i2c_write(0x01) ;                               // select temperature register
+        i2c_repStart();                                 // send repeated start condition
+        i2c_write((TC74_ADDRESS << 1) | I2C_READ);
+
         temp = i2c_read();
         i2c_NAK();                                      // send a NAK (last read)
         i2c_stop();                                     // send stop condition
 
         // ici on peut console log la temperature (temp)
+        */
 
         _delay(125000);
         //-------- code capteur -----------

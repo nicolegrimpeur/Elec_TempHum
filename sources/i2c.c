@@ -8,9 +8,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <xc.h>
-#include "general.h"
-#include "lcd.h"
-#include "i2c.h"
+#include "../ressources/general.h"
+#include "../ressources/i2c.h"
 
 
 void i2c_init(void) {
@@ -25,9 +24,9 @@ void i2c_init(void) {
     Nop();
     Nop();
 //    SSP1ADD = 9;                        // set Baud rate as 25kHz (SSPADD is used in master mode), fBaud = 1/(((SSPADD+1)*4)/fOSC)
-    SSP1ADD = 4;    // baud rate = 50 kHz
-    Nop();                              // TC74 timing spec is from 10kHz to 100kHz
-    Nop();
+    SSP1ADD = 4;                        // baud rate = 50 kHz
+    Nop();                              // TC74 timing spec is from 10kHz to 100kHz 
+    Nop();                              /*! VERIFIER QUE LES HIH ONT LA MEME CONFIG*/
     Nop();
     SSP1STATbits.SMP = SET;             // disable slew rate control for standard speed mode.
     SSP1STATbits.CKE = SET;             // enable SMBUS compliance
