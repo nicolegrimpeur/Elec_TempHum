@@ -51,6 +51,7 @@ void i2c_start(void) {
     while (!PIR1bits.SSPIF);                    // wait for interrupt when hardware drops SEN
 }
 
+/*
 void i2c_repStart(void) {
 
     i2c_waitForIdle();                          // check for idle state
@@ -58,7 +59,7 @@ void i2c_repStart(void) {
     PIR1bits.SSP1IF = CLEAR;                    // clear interrupt flag
     SSP1CON2bits.RSEN = ENABLE;                 // enable restart condition (RSEN=1, bit 1)
     while (!PIR1bits.SSPIF);                    // wait for interrupt when hardware drops RSEN
-}
+}*/
 
 void i2c_stop(void) {
 
@@ -84,6 +85,7 @@ void i2c_NAK(void) {
     while (!PIR1bits.SSPIF);                    // wait for interrupt
 }
 
+/*
 UINT8_T i2c_read(void) {
     UINT8_T i2cReadData = 0;
 
@@ -96,7 +98,7 @@ UINT8_T i2c_read(void) {
     PIR1bits.SSP1IF = CLEAR;                    // clear interrupt flag
     i2cReadData = SSP1BUF;                      // read data    (clears flag BF - Buffer Full)
     return i2cReadData;
-}
+}*/
 
 void i2c_write(UINT8_T i2cWriteData) {
 

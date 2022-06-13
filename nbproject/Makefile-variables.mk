@@ -6,8 +6,8 @@
 CND_BASEDIR=`pwd`
 # default configuration
 CND_ARTIFACT_DIR_default=dist/default/production
-CND_ARTIFACT_NAME_default=Elec_TempHum.X.production.hex
-CND_ARTIFACT_PATH_default=dist/default/production/Elec_TempHum.X.production.hex
+CND_ARTIFACT_NAME_default=Elec_TempHum.production.hex
+CND_ARTIFACT_PATH_default=dist/default/production/Elec_TempHum.production.hex
 CND_PACKAGE_DIR_default=${CND_DISTDIR}/default/package
-CND_PACKAGE_NAME_default=electemphum.x.tar
-CND_PACKAGE_PATH_default=${CND_DISTDIR}/default/package/electemphum.x.tar
+CND_PACKAGE_NAME_default=electemphum.tar
+CND_PACKAGE_PATH_default=${CND_DISTDIR}/default/package/electemphum.tar

@@ -37,6 +37,7 @@ void SPITransfer(uint8_t data_out) {        // Warning: Slave Select is not mana
     while (!PIR3bits.SSP2IF);               // wait until transmission is complete
 }
 
+
 uint8_t SPIReceive(uint8_t data_out) {      // Warning: Slave Select is not managed in this function
     // don't forget to control SS before and after calling this function
     uint8_t data_in, dummy_byte;

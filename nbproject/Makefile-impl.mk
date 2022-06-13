@@ -24,7 +24,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=Elec_TempHum.X
+PROJECTNAME=Elec_TempHum
 
 # Active Configuration
 DEFAULTCONF=default

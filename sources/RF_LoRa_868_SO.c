@@ -28,12 +28,13 @@ void ResetRFModule(void) {          // apply sequence given on SX1272 datasheet 
     __delay_ms(50);
 }
 
+/*
 void AntennaTX(void) {              // control antenna swith and connect antenna to RF module output
     RF_RXpin = 0;
     RF_TXpin = 0;
     __delay_ms(10);
     RF_TXpin = 1;
-}
+}*/
 
 void AntennaRX(void) {              // control antenna swith and connect antenna to RF module input
     RF_RXpin = 0;

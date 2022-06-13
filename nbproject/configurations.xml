@@ -8,6 +8,7 @@
       <itemPath>ressources/SX1272.h</itemPath>
       <itemPath>ressources/general.h</itemPath>
       <itemPath>ressources/spi.h</itemPath>
+      <itemPath>ressources/i2c.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -19,6 +20,7 @@
       <itemPath>sources/RF_LoRa_868_SO.c</itemPath>
       <itemPath>sources/SX1272.c</itemPath>
       <itemPath>sources/spi.c</itemPath>
+      <itemPath>sources/i2c.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -35,7 +37,7 @@
     <conf name="default" type="2">
       <toolsSet>
         <developmentServer>localhost</developmentServer>
-        <targetDevice>PIC18F23K20</targetDevice>
+        <targetDevice>PIC18F46K22</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
         <platformTool>pk4hybrid</platformTool>
@@ -196,7 +198,9 @@
                   value="${memories.instruction.ram.ranges}"/>
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.ranges" value="0-1fff"/>
-        <property key="poweroptions.powerenable" value="false"/>
+        <property key="poweroptions.powerenable" value="true"/>
+        <property key="programmerToGoFilePath"
+                  value="D:/ISEN/CIR3/Projet/Elec_TempHum/debug/default/Elec_TempHum_ptg"/>
         <property key="programmerToGoImageName" value="Elec_TempHum_ptg"/>
         <property key="programoptions.donoteraseauxmem" value="false"/>
         <property key="programoptions.eraseb4program" value="true"/>
@@ -225,7 +229,7 @@
                   value="toolpack.updateoptions.uselatestoolpack"/>
         <property key="toolpack.updateoptions.packversion"
                   value="Press to select which tool pack to use"/>
-        <property key="voltagevalue" value="3.25"/>
+        <property key="voltagevalue" value="3.3"/>
       </pk4hybrid>
     </conf>
   </confs>
