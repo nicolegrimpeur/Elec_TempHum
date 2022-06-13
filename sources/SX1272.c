@@ -82,7 +82,7 @@ void InitModule (void){
 
     WriteSXRegister(REG_SYNC_WORD, 0x12);   // default value
 }
-/*
+
 // read a register and send its content to serial output
 void PrintSXRegContent(uint8_t address){
     uint8_t RegValue;
@@ -147,4 +147,4 @@ void CheckConfiguration (void){
     PrintSXRegContent(REG_DETECTION_THRESHOLD);
     UARTWriteStr("REG_SYNC_WORD = 0x");
     PrintSXRegContent(REG_SYNC_WORD);
-}*/
+}

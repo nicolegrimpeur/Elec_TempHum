@@ -243,8 +243,5 @@ struct pack
 void WriteSXRegister(uint8_t address, uint8_t data);        // write data in a SX1272 register
 uint8_t ReadSXRegister(uint8_t address);                    // read data which is in a SX1272 register
 void InitModule (void);                                     // initialize the module (for TX or RX)
-/*
-void PrintSXRegContent(uint8_t address);                    // read SX1272 register and send its content to serial output
-void CheckConfiguration (void);                             // for debugging purpose: read configuration registers and send information to serial output
-*/
+
 #endif //ELECTEMP_HUM_SX1272_H

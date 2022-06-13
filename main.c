@@ -163,36 +163,68 @@ int main(int argc, char** argv) {
         */
 
         _delay(125000);
-        //-------- code capteur -----------
+        //-------- fin code capteur -----------
 
 
         // wait for valid header reception
-        reg_val = ReadSXRegister(REG_IRQ_FLAGS);
-        while ((reg_val & 0x10) == 0x00) {                  // check Valid Header flag (bit n�4)
-            reg_val = ReadSXRegister(REG_IRQ_FLAGS);
-        }
-
-        // wait for end of packet reception
-        reg_val = ReadSXRegister(REG_IRQ_FLAGS);
-        while ((reg_val & 0x40) == 0x00) {                  // check Packet Reception Complete flag (bit n�6)
-            reg_val = ReadSXRegister(REG_IRQ_FLAGS);
-        }
-
-        // read received data
-        RXNumberOfBytes = ReadSXRegister(REG_RX_NB_BYTES);                              // read how many bytes have been received
-        WriteSXRegister(REG_FIFO_ADDR_PTR, ReadSXRegister(REG_FIFO_RX_CURRENT_ADDR));   // to read FIFO at correct location, load REG_FIFO_ADDR_PTR with REG_FIFO_RX_CURRENT_ADDR value
-        for (i = 0; i < RXNumberOfBytes; i++) {
-            reg_val = ReadSXRegister(REG_FIFO);       // read FIFO
-        }
-
-        // reset all IRQs
-        /*    reg_val = ReadSXRegister(REG_IRQ_FLAGS);
-        */
-        WriteSXRegister(REG_IRQ_FLAGS, 0xFF);           // clear flags: writing 1 clears flag
+//        reg_val = ReadSXRegister(REG_IRQ_FLAGS);
+//        while ((reg_val & 0x10) == 0x00) {                  // check Valid Header flag (bit n�4)
+//            reg_val = ReadSXRegister(REG_IRQ_FLAGS);
+//        }
+//
+//        // wait for end of packet reception
+//        reg_val = ReadSXRegister(REG_IRQ_FLAGS);
+//        while ((reg_val & 0x40) == 0x00) {                  // check Packet Reception Complete flag (bit n�6)
+//            reg_val = ReadSXRegister(REG_IRQ_FLAGS);
+//        }
+//
+//        // read received data
+//        RXNumberOfBytes = ReadSXRegister(REG_RX_NB_BYTES);                              // read how many bytes have been received
+//        WriteSXRegister(REG_FIFO_ADDR_PTR, ReadSXRegister(REG_FIFO_RX_CURRENT_ADDR));   // to read FIFO at correct location, load REG_FIFO_ADDR_PTR with REG_FIFO_RX_CURRENT_ADDR value
+//        for (i = 0; i < RXNumberOfBytes; i++) {
+//            reg_val = ReadSXRegister(REG_FIFO);       // read FIFO
+//        }
+//
+//        // reset all IRQs
+//        /*    reg_val = ReadSXRegister(REG_IRQ_FLAGS);
+//        */
+//        WriteSXRegister(REG_IRQ_FLAGS, 0xFF);           // clear flags: writing 1 clears flag
 
         /*    // check that flags are actually cleared (useless if not debugging)
             reg_val = ReadSXRegister(REG_IRQ_FLAGS);
          */
+
+        // transformation données capteur
+
+        AntennaTX();
+
+        WriteSXRegister(REG_FIFO_ADDR_PTR, ReadSXRegister(REG_FIFO_TX_BASE_ADDR));      // FifiAddrPtr takes value of FifoTxBaseAddr
+        WriteSXRegister(REG_PAYLOAD_LENGTH_LORA, PAYLOAD_LENGTH);                       // set the number of bytes to transmit (PAYLOAD_LENGTH is defined in RF_LoRa868_SO.h)
+
+        for (i = 0; i < PAYLOAD_LENGTH; i++) {
+            // donnée du capteur transformé
+            // WriteSXRegister(REG_FIFO, txBuffer[i]);         // load FIFO with data to transmit
+        }
+
+        // set mode to LoRa TX
+        WriteSXRegister(REG_OP_MODE, LORA_TX_MODE);
+        __delay_ms(100);                                    // delay required to start oscillator and PLL
+
+        // wait end of transmission
+        do {
+            reg_val = ReadSXRegister(REG_IRQ_FLAGS); // wait for end of transmission (wait until TxDone is set)
+        } while ((reg_val & 0x08) == 0x00);
+
+        __delay_ms(200);        // delay is required before checking mode: it takes some time to go from TX mode to STDBY mode
+
+        // reset all IRQs
+        WriteSXRegister(REG_IRQ_FLAGS, 0xFF);           // clear flags: writing 1 clears flag
+
+        // wait before next transmission
+        for (i = 0; i < 4; i++) {
+            __delay_ms(500);
+        }
+
 
     }       // end of loop forever
 
