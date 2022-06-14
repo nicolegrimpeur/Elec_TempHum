@@ -198,12 +198,37 @@ int main(int argc, char** argv) {
 
         AntennaTX();
 
+        //////////// calcul buffer à envoyer
+        int octet1 = 0b0000000; // humidite
+        int octet2 = 0b0000000;
+        int octet3 = 0b0000000; // temperature
+        int octet4 = 0b0000000;
+
+        int masque = 0b00111111;
+        int octet1WithoutStatus = masque & octet1;
+
+        float humidite = (float) (octet1WithoutStatus * pow(2, 8) + octet2) / ((float) pow(2, 14) - 2);
+
+        octet4 = octet4 >> 2;
+
+        float temperature = (float) ((octet3 * (int) pow(2, 6) + octet4) * 165) / ((float) pow(2, 14) - 2) - 40;
+
+        char tabTemp[7];
+        snprintf(tabTemp, sizeof tabTemp, "%f", temperature);
+        char tabHum[4];
+        snprintf(tabHum, sizeof tabHum, "%f", humidite);
+
+        char txBuffer[10];
+        strcpy(txBuffer, tabHum);
+        strcat(txBuffer, tabTemp);
+        ////////////////// fin calcul buffer
+
         WriteSXRegister(REG_FIFO_ADDR_PTR, ReadSXRegister(REG_FIFO_TX_BASE_ADDR));      // FifiAddrPtr takes value of FifoTxBaseAddr
         WriteSXRegister(REG_PAYLOAD_LENGTH_LORA, PAYLOAD_LENGTH);                       // set the number of bytes to transmit (PAYLOAD_LENGTH is defined in RF_LoRa868_SO.h)
 
         for (i = 0; i < PAYLOAD_LENGTH; i++) {
             // donnée du capteur transformé
-            // WriteSXRegister(REG_FIFO, txBuffer[i]);         // load FIFO with data to transmit
+             WriteSXRegister(REG_FIFO, txBuffer[i]);         // load FIFO with data to transmit
         }
 
         // set mode to LoRa TX
