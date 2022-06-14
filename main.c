@@ -154,6 +154,10 @@ void __interrupt() ISR_interrupt(void) {
 
 
     LED = CLEAR;
+
+    INTCONbits.INT0IF = 0;     // flag d'interruption effacé
+
+    SLEEP();
 }
 
 void passageEcoute() {
@@ -190,6 +194,10 @@ int main(int argc, char** argv) {
 
     passageEcoute();
 
+    INTCONbits.GIE = ON;    // autorise les interruptions
+
     __delay_ms(100);                                    // delay required to start oscillator and PLL
+
+    SLEEP();
 }
 #pragma clang diagnostic pop
