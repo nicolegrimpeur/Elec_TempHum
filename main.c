@@ -101,8 +101,8 @@ void __interrupt() ISR_interrupt(void) {
     delay(1000)
     int tension = ADRESL;
     tension = tension * 2;
-    ADREL = tension;
-    ADCON.ADON = CLEAR;
+    ADRESL = tension;
+    ADCON0.ADON = CLEAR;
 
     AntennaTX();
 
