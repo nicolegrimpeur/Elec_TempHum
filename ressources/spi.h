@@ -14,9 +14,9 @@
 //                  MISO is D1
 //                  MOSI is D4
 //
-#define SPI_SCK_DIR             TRISBbits.TRISB2
-#define SPI_MISO_DIR            TRISBbits.TRISB3
-#define SPI_MOSI_DIR            TRISBbits.TRISB4
+#define SPI_SCK_DIR             TRISDbits.TRISD0
+#define SPI_MISO_DIR            TRISDbits.TRISD1
+#define SPI_MOSI_DIR            TRISDbits.TRISD4
 //
 // Slave Select is wired on E0
 //
