@@ -97,6 +97,12 @@ void __interrupt() ISR_interrupt(void) {
 
     // et là normalement tout est dans le SSP1BUF (buffer) avec humidité sur 0x00 et 0x01 ; temp sur 0x02 et 0x03
 
+    ADCON0.ADON = SET;
+    delay(1000)
+    int tension = ADRESL;
+    tension = tension * 2;
+    ADREL = tension;
+    ADCON.ADON = CLEAR;
 
     AntennaTX();
 
@@ -181,6 +187,10 @@ int main(int argc, char** argv) {
     ResetRFModule();            // reset the RF Solutions LoRa module (should be optional since Power On Reset is implemented)
     i2c_init();                             // configuration de l'interface I2C
 
+    // config ADC pour mesurer la batterie restante
+    ADCON1 = 0b00000000; 
+    ADCON2 = 0b10100100;
+    ADCON0 = 0b00000000;
 
     // put module in LoRa mode (see SX1272 datasheet page 107)
 
