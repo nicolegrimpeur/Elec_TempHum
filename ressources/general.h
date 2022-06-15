@@ -34,7 +34,8 @@
 // (used by inline function _delay)
 // TCY = (1 / (_XTAL_FREQ / 4)) = 4µs
 
-#define LED             LATEbits.RE0            // I2C SCL pin
+#define LED             LATEbits.LATE0
+#define LED_DIR             TRISEbits.TRISE0
 
 // New typedefs
 typedef unsigned char UINT8_T;    // UINT8_T means byte (8-bit)

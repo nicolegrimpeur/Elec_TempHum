@@ -76,9 +76,14 @@
 #pragma config EBTRB = OFF      // Boot Block Table Read Protection bit (Boot Block (000000-0007FFh) not protected from table reads executed in other blocks)
 
 
-void __interrupt() ISR_interrupt(void) {
-    LED = SET;
+void __interrupt()ISR_interrupt(void) {
 
+    uint8_t reg_val;                // when reading SX1272 registers, stores the content (variable read in main and typically  updated by ReadSXRegister function)
+    uint8_t RXNumberOfBytes;        // to store the number of bytes received
+    uint8_t i;
+
+    LED = SET;
+/*
     //------- code capteur ------------
 
     // demande de mesures
@@ -96,6 +101,7 @@ void __interrupt() ISR_interrupt(void) {
     i2c_stop();
 
     // et là normalement tout est dans le SSP1BUF (buffer) avec humidité sur 0x00 et 0x01 ; temp sur 0x02 et 0x03
+*/
 
     ADCON0.ADON = SET;
     delay(1000)
@@ -104,60 +110,155 @@ void __interrupt() ISR_interrupt(void) {
     ADRESL = tension;
     ADCON0.ADON = CLEAR;
 
-    AntennaTX();
 
-    //////////// calcul buffer à envoyer
-    int octet1 = 0b0000000; // humidite
-    int octet2 = 0b0000000;
-    int octet3 = 0b0000000; // temperature
-    int octet4 = 0b0000000;
+    int taillePayload = REG_RX_NB_BYTES;
 
-    int masque = 0b00111111;
-    int octet1WithoutStatus = masque & octet1;
+    WriteSXRegister(REG_FIFO_ADDR_PTR, REG_FIFO_RX_CURRENT_ADDR);
 
-    float humidite = (float) (octet1WithoutStatus * pow(2, 8) + octet2) / ((float) pow(2, 14) - 2);
-
-    octet4 = octet4 >> 2;
-
-    float temperature = (float) ((octet3 * (int) pow(2, 6) + octet4) * 165) / ((float) pow(2, 14) - 2) - 40;
-
-    char tabTemp[7];
-    snprintf(tabTemp, sizeof tabTemp, "%f", temperature);
-    char tabHum[4];
-    snprintf(tabHum, sizeof tabHum, "%f", humidite);
-
-    char txBuffer[10];
-    strcpy(txBuffer, tabHum);
-    strcat(txBuffer, tabTemp);
-    ////////////////// fin calcul buffer
-
-    WriteSXRegister(REG_FIFO_ADDR_PTR, ReadSXRegister(REG_FIFO_TX_BASE_ADDR));      // FifiAddrPtr takes value of FifoTxBaseAddr
-    WriteSXRegister(REG_PAYLOAD_LENGTH_LORA, PAYLOAD_LENGTH);                       // set the number of bytes to transmit (PAYLOAD_LENGTH is defined in RF_LoRa868_SO.h)
-
-    for (i = 0; i < PAYLOAD_LENGTH; i++) {
-        // donnée du capteur transformé
-        WriteSXRegister(REG_FIFO, txBuffer[i]);         // load FIFO with data to transmit
+    char rxBuffer[6];
+    for (i = 0; i < 5; ++i) {
+        rxBuffer[i] = REG_FIFO;
     }
 
-    // set mode to LoRa TX
-    WriteSXRegister(REG_OP_MODE, LORA_TX_MODE);
-    __delay_ms(100);                                    // delay required to start oscillator and PLL
+    if (rxBuffer[4] == 7) {
+        if (rxBuffer[5] == 1) {
+            char data[7];
+            data[0] = 0xAD;
+            data[1] = 0x4E;
+            data[2] = 0x01;
+            data[3] = 0x07;
+            data[4] = 0x01; //// à modifier
+            data[5] = 10;
 
-    // wait end of transmission
-    do {
-        reg_val = ReadSXRegister(REG_IRQ_FLAGS); // wait for end of transmission (wait until TxDone is set)
-    } while ((reg_val & 0x08) == 0x00);
+            WriteSXRegister(REG_FIFO_ADDR_PTR,
+                            ReadSXRegister(REG_FIFO_TX_BASE_ADDR));      // FifiAddrPtr takes value of FifoTxBaseAddr
+            WriteSXRegister(REG_PAYLOAD_LENGTH_LORA,
+                            PAYLOAD_LENGTH);                       // set the number of bytes to transmit (PAYLOAD_LENGTH is defined in RF_LoRa868_SO.h)
 
-    __delay_ms(200);        // delay is required before checking mode: it takes some time to go from TX mode to STDBY mode
+            for (i = 0; i < 6; ++i) {
+                WriteSXRegister(REG_FIFO, data[i]);         // load FIFO with data to transmit
+            }
 
-    // reset all IRQs
-    WriteSXRegister(REG_IRQ_FLAGS, 0xFF);           // clear flags: writing 1 clears flag
 
-    // wait before next transmission
-    for (i = 0; i < 4; i++) {
-        __delay_ms(500);
+            // set mode to LoRa TX
+            WriteSXRegister(REG_OP_MODE, LORA_TX_MODE);
+            _delay(100);                                    // delay required to start oscillator and PLL
+
+            // wait end of transmission
+            do {
+                reg_val = ReadSXRegister(REG_IRQ_FLAGS); // wait for end of transmission (wait until TxDone is set)
+            } while ((reg_val & 0x08) == 0x00);
+
+            _delay(200);
+            // delay is required before checking mode: it takes some time to go from TX mode to STDBY mode
+
+            // reset all IRQs
+            WriteSXRegister(REG_IRQ_FLAGS, 0xFF);           // clear flags: writing 1 clears flag
+
+            // wait before next transmission
+            for (i = 0; i < 4; i++) {
+                _delay(500);
+            }
+        }
+            // envoi donnée
+        else if (rxBuffer[5] == 2) {
+            char data[6];
+            data[0] = 0xAD;
+            data[1] = 0x4E;
+            data[2] = 0x01;
+            data[3] = 0x07;
+            data[4] = 0x04;
+
+            WriteSXRegister(REG_FIFO_ADDR_PTR,
+                            ReadSXRegister(REG_FIFO_TX_BASE_ADDR));      // FifiAddrPtr takes value of FifoTxBaseAddr
+            WriteSXRegister(REG_PAYLOAD_LENGTH_LORA,
+                            PAYLOAD_LENGTH);                       // set the number of bytes to transmit (PAYLOAD_LENGTH is defined in RF_LoRa868_SO.h)
+
+            for (i = 0; i < 5; ++i) {
+                WriteSXRegister(REG_FIFO, data[i]);         // load FIFO with data to transmit
+            }
+
+
+            // set mode to LoRa TX
+            WriteSXRegister(REG_OP_MODE, LORA_TX_MODE);
+            _delay(100);                                    // delay required to start oscillator and PLL
+
+            // wait end of transmission
+            do {
+                reg_val = ReadSXRegister(REG_IRQ_FLAGS); // wait for end of transmission (wait until TxDone is set)
+            } while ((reg_val & 0x08) == 0x00);
+
+            _delay(200);
+            // delay is required before checking mode: it takes some time to go from TX mode to STDBY mode
+
+            // reset all IRQs
+            WriteSXRegister(REG_IRQ_FLAGS, 0xFF);           // clear flags: writing 1 clears flag
+
+            // wait before next transmission
+            for (i = 0; i < 4; i++) {
+                _delay(500);
+            }
+        }
+        else if (rxBuffer[5] == 3) { ////// TODO : à modifier
+            AntennaTX();
+
+            //////////// calcul buffer à envoyer
+            int octet1 = 0b0000000; // humidite
+            int octet2 = 0b0000000;
+            int octet3 = 0b0000000; // temperature
+            int octet4 = 0b0000000;
+
+            int masque = 0b00111111;
+            int octet1WithoutStatus = masque & octet1;
+
+            float humidite = (float) (octet1WithoutStatus * 256 + octet2) / (16384 - 2);
+
+            octet4 = octet4 >> 2;
+
+            float temperature = (float) ((octet3 * 64 + octet4) * 165) / (16384 - 2) - 40;
+
+            char tabTemp[7];
+            snprintf(tabTemp, sizeof tabTemp, "%f", temperature);
+            char tabHum[4];
+            snprintf(tabHum, sizeof tabHum, "%f", humidite);
+
+            char txBuffer[10];
+            strcpy(txBuffer, tabHum);
+            strcat(txBuffer, tabTemp);
+            ////////////////// fin calcul buffer
+
+            WriteSXRegister(REG_FIFO_ADDR_PTR,
+                            ReadSXRegister(REG_FIFO_TX_BASE_ADDR));      // FifiAddrPtr takes value of FifoTxBaseAddr
+            WriteSXRegister(REG_PAYLOAD_LENGTH_LORA,
+                            PAYLOAD_LENGTH);                       // set the number of bytes to transmit (PAYLOAD_LENGTH is defined in RF_LoRa868_SO.h)
+
+            for (i = 0; i < PAYLOAD_LENGTH; i++) {
+                // donnée du capteur transformé
+                WriteSXRegister(REG_FIFO, txBuffer[i]);         // load FIFO with data to transmit
+            }
+
+            // set mode to LoRa TX
+            WriteSXRegister(REG_OP_MODE, LORA_TX_MODE);
+            _delay(100);                                    // delay required to start oscillator and PLL
+
+            // wait end of transmission
+            do {
+                reg_val = ReadSXRegister(REG_IRQ_FLAGS); // wait for end of transmission (wait until TxDone is set)
+            } while ((reg_val & 0x08) == 0x00);
+
+            _delay(200);        // delay is required before checking mode: it takes some time to go from TX mode to STDBY mode
+
+            // reset all IRQs
+            WriteSXRegister(REG_IRQ_FLAGS, 0xFF);           // clear flags: writing 1 clears flag
+
+            // wait before next transmission
+            for (i = 0; i < 4; i++) {
+                _delay(500);
+            }
+        }
     }
 
+    _delay(2000);
 
     LED = CLEAR;
 
@@ -176,11 +277,7 @@ void passageEcoute() {
     WriteSXRegister(REG_OP_MODE, LORA_RX_CONTINUOUS_MODE);
 }
 
-int main(int argc, char** argv) {
-
-    uint8_t reg_val;                // when reading SX1272 registers, stores the content (variable read in main and typically  updated by ReadSXRegister function)
-    uint8_t RXNumberOfBytes;        // to store the number of bytes received
-    uint8_t i;
+int main(int argc, char **argv) {
 
     InitRFLoRaPins();           // configure pins for RF Solutions LoRa module
     SPIInit();                  // init SPI
@@ -191,13 +288,15 @@ int main(int argc, char** argv) {
     ADCON1 = 0b00000000; 
     ADCON2 = 0b10100100;
     ADCON0 = 0b00000000;
+    
+    LED_DIR = OUTP;
 
     // put module in LoRa mode (see SX1272 datasheet page 107)
 
     WriteSXRegister(REG_OP_MODE, FSK_SLEEP_MODE);       // SLEEP mode required first to change bit n�7
     WriteSXRegister(REG_OP_MODE, LORA_SLEEP_MODE);      // switch from FSK mode to LoRa mode
     WriteSXRegister(REG_OP_MODE, LORA_STANDBY_MODE);    // STANDBY mode required fot FIFO loading
-    __delay_ms(100);
+    _delay(100);
 
     // initialize the module
     InitModule();
@@ -206,8 +305,13 @@ int main(int argc, char** argv) {
 
     INTCONbits.GIE = ON;    // autorise les interruptions
 
-    __delay_ms(100);                                    // delay required to start oscillator and PLL
+    _delay(100);                                    // delay required to start oscillator and PLL
+
+    LED = SET;
 
     SLEEP();
+    
+    return 0;
 }
+
 #pragma clang diagnostic pop
