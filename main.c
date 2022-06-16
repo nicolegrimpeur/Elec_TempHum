@@ -103,12 +103,10 @@ void __interrupt()ISR_interrupt(void) {
     // et là normalement tout est dans le SSP1BUF (buffer) avec humidité sur 0x00 et 0x01 ; temp sur 0x02 et 0x03
 */
 
-    ADCON0.ADON = SET;
-    delay(1000)
+    ADCON0bits.GODONE = 1;         // start conversion
+    while (ADCON0bits.GODONE);      // wait until conversion is finished
     int tension = ADRESL;
     tension = tension * 2;
-    ADRESL = tension;
-    ADCON0.ADON = CLEAR;
 
 
     int taillePayload = REG_RX_NB_BYTES;
@@ -286,8 +284,8 @@ int main(int argc, char **argv) {
 
     // config ADC pour mesurer la batterie restante
     ADCON1 = 0b00000000; 
-    ADCON2 = 0b10100100;
-    ADCON0 = 0b00000000;
+    ADCON2 = 0b00111110;
+    ADCON0 = 0b00000001;
     
     LED_DIR = OUTP;
 
@@ -307,7 +305,7 @@ int main(int argc, char **argv) {
 
     _delay(100);                                    // delay required to start oscillator and PLL
 
-    LED = SET;
+    //LED = SET;
 
     SLEEP();
     
