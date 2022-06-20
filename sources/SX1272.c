@@ -43,7 +43,7 @@ void InitModule (void){
     WriteSXRegister(REG_FRF_MID, 0x4C);
     WriteSXRegister(REG_FRF_LSB, 0xCC);
 
-    WriteSXRegister(REG_PA_CONFIG, 0x01); // out=RFIO, Pout = 0dBm
+    WriteSXRegister(REG_PA_CONFIG, 0b10001111); // out=RFIO, Pout = 0dBm
 
     WriteSXRegister(REG_PA_RAMP, 0x19); // low cons PLL TX&RX, 40us
 
