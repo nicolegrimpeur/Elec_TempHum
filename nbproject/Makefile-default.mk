@@ -57,17 +57,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=sources/RF_LoRa_868_SO.c sources/SX1272.c sources/spi.c sources/i2c.c main.c
+SOURCEFILES_QUOTED_IF_SPACED=sources/RF_LoRa_868_SO.c sources/SX1272.c sources/spi.c sources/i2c.c main.c sources/communication.c sources/config.c sources/switch.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/sources/RF_LoRa_868_SO.p1 ${OBJECTDIR}/sources/SX1272.p1 ${OBJECTDIR}/sources/spi.p1 ${OBJECTDIR}/sources/i2c.p1 ${OBJECTDIR}/main.p1
-POSSIBLE_DEPFILES=${OBJECTDIR}/sources/RF_LoRa_868_SO.p1.d ${OBJECTDIR}/sources/SX1272.p1.d ${OBJECTDIR}/sources/spi.p1.d ${OBJECTDIR}/sources/i2c.p1.d ${OBJECTDIR}/main.p1.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/sources/RF_LoRa_868_SO.p1 ${OBJECTDIR}/sources/SX1272.p1 ${OBJECTDIR}/sources/spi.p1 ${OBJECTDIR}/sources/i2c.p1 ${OBJECTDIR}/main.p1 ${OBJECTDIR}/sources/communication.p1 ${OBJECTDIR}/sources/config.p1 ${OBJECTDIR}/sources/switch.p1
+POSSIBLE_DEPFILES=${OBJECTDIR}/sources/RF_LoRa_868_SO.p1.d ${OBJECTDIR}/sources/SX1272.p1.d ${OBJECTDIR}/sources/spi.p1.d ${OBJECTDIR}/sources/i2c.p1.d ${OBJECTDIR}/main.p1.d ${OBJECTDIR}/sources/communication.p1.d ${OBJECTDIR}/sources/config.p1.d ${OBJECTDIR}/sources/switch.p1.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/sources/RF_LoRa_868_SO.p1 ${OBJECTDIR}/sources/SX1272.p1 ${OBJECTDIR}/sources/spi.p1 ${OBJECTDIR}/sources/i2c.p1 ${OBJECTDIR}/main.p1
+OBJECTFILES=${OBJECTDIR}/sources/RF_LoRa_868_SO.p1 ${OBJECTDIR}/sources/SX1272.p1 ${OBJECTDIR}/sources/spi.p1 ${OBJECTDIR}/sources/i2c.p1 ${OBJECTDIR}/main.p1 ${OBJECTDIR}/sources/communication.p1 ${OBJECTDIR}/sources/config.p1 ${OBJECTDIR}/sources/switch.p1
 
 # Source Files
-SOURCEFILES=sources/RF_LoRa_868_SO.c sources/SX1272.c sources/spi.c sources/i2c.c main.c
+SOURCEFILES=sources/RF_LoRa_868_SO.c sources/SX1272.c sources/spi.c sources/i2c.c main.c sources/communication.c sources/config.c sources/switch.c
 
 
 
@@ -134,6 +134,30 @@ ${OBJECTDIR}/main.p1: main.c  nbproject/Makefile-${CND_CONF}.mk
 	@-${MV} ${OBJECTDIR}/main.d ${OBJECTDIR}/main.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/main.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
+${OBJECTDIR}/sources/communication.p1: sources/communication.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/sources" 
+	@${RM} ${OBJECTDIR}/sources/communication.p1.d 
+	@${RM} ${OBJECTDIR}/sources/communication.p1 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1   -mdfp=${DFP_DIR}/xc8  -fno-short-double -fno-short-float -memi=wordwrite -O0 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/sources/communication.p1 sources/communication.c 
+	@-${MV} ${OBJECTDIR}/sources/communication.d ${OBJECTDIR}/sources/communication.p1.d 
+	@${FIXDEPS} ${OBJECTDIR}/sources/communication.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
+	
+${OBJECTDIR}/sources/config.p1: sources/config.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/sources" 
+	@${RM} ${OBJECTDIR}/sources/config.p1.d 
+	@${RM} ${OBJECTDIR}/sources/config.p1 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1   -mdfp=${DFP_DIR}/xc8  -fno-short-double -fno-short-float -memi=wordwrite -O0 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/sources/config.p1 sources/config.c 
+	@-${MV} ${OBJECTDIR}/sources/config.d ${OBJECTDIR}/sources/config.p1.d 
+	@${FIXDEPS} ${OBJECTDIR}/sources/config.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
+	
+${OBJECTDIR}/sources/switch.p1: sources/switch.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/sources" 
+	@${RM} ${OBJECTDIR}/sources/switch.p1.d 
+	@${RM} ${OBJECTDIR}/sources/switch.p1 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1   -mdfp=${DFP_DIR}/xc8  -fno-short-double -fno-short-float -memi=wordwrite -O0 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/sources/switch.p1 sources/switch.c 
+	@-${MV} ${OBJECTDIR}/sources/switch.d ${OBJECTDIR}/sources/switch.p1.d 
+	@${FIXDEPS} ${OBJECTDIR}/sources/switch.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
+	
 else
 ${OBJECTDIR}/sources/RF_LoRa_868_SO.p1: sources/RF_LoRa_868_SO.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/sources" 
@@ -174,6 +198,30 @@ ${OBJECTDIR}/main.p1: main.c  nbproject/Makefile-${CND_CONF}.mk
 	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c   -mdfp=${DFP_DIR}/xc8  -fno-short-double -fno-short-float -memi=wordwrite -O0 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/main.p1 main.c 
 	@-${MV} ${OBJECTDIR}/main.d ${OBJECTDIR}/main.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/main.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
+	
+${OBJECTDIR}/sources/communication.p1: sources/communication.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/sources" 
+	@${RM} ${OBJECTDIR}/sources/communication.p1.d 
+	@${RM} ${OBJECTDIR}/sources/communication.p1 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c   -mdfp=${DFP_DIR}/xc8  -fno-short-double -fno-short-float -memi=wordwrite -O0 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/sources/communication.p1 sources/communication.c 
+	@-${MV} ${OBJECTDIR}/sources/communication.d ${OBJECTDIR}/sources/communication.p1.d 
+	@${FIXDEPS} ${OBJECTDIR}/sources/communication.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
+	
+${OBJECTDIR}/sources/config.p1: sources/config.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/sources" 
+	@${RM} ${OBJECTDIR}/sources/config.p1.d 
+	@${RM} ${OBJECTDIR}/sources/config.p1 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c   -mdfp=${DFP_DIR}/xc8  -fno-short-double -fno-short-float -memi=wordwrite -O0 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/sources/config.p1 sources/config.c 
+	@-${MV} ${OBJECTDIR}/sources/config.d ${OBJECTDIR}/sources/config.p1.d 
+	@${FIXDEPS} ${OBJECTDIR}/sources/config.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
+	
+${OBJECTDIR}/sources/switch.p1: sources/switch.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/sources" 
+	@${RM} ${OBJECTDIR}/sources/switch.p1.d 
+	@${RM} ${OBJECTDIR}/sources/switch.p1 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c   -mdfp=${DFP_DIR}/xc8  -fno-short-double -fno-short-float -memi=wordwrite -O0 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/sources/switch.p1 sources/switch.c 
+	@-${MV} ${OBJECTDIR}/sources/switch.d ${OBJECTDIR}/sources/switch.p1.d 
+	@${FIXDEPS} ${OBJECTDIR}/sources/switch.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
 endif
 

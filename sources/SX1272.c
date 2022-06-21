@@ -2,15 +2,9 @@
 // Created by nico_ on 07/06/2022.
 //
 
+#include "../ressources/include.h"
 #include "../ressources/SX1272.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <xc.h>
-#include "../ressources/general.h"
 #include "../ressources/spi.h"
-#include "../ressources/SX1272.h"
 #include "../ressources/RF_LoRa_868_SO.h"
 
 

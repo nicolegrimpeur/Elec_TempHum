@@ -5,10 +5,7 @@
  * Created on 24 mars 2015, 08:09
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <xc.h>
-#include "../ressources/general.h"
+#include "../ressources/include.h"
 #include "../ressources/i2c.h"
 
 
