@@ -15,6 +15,7 @@
             <file>file:/D:/ProjetElec/Elec_TempHum.X/sources/communication.c</file>
             <file>file:/D:/ProjetElec/Elec_TempHum.X/main.c</file>
             <file>file:/D:/ProjetElec/Elec_TempHum.X/sources/SX1272.c</file>
+            <file>file:/D:/ProjetElec/Elec_TempHum.X/sources/i2c.c</file>
         </group>
     </open-files>
 </project-private>

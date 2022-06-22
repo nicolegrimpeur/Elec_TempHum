@@ -11,7 +11,7 @@
 #include "./ressources/switch.h"
 #include "./ressources/communication.h"
 #include "./ressources/config.h"
- 
+
 
 /*****/
 // CONFIG1H
@@ -120,6 +120,31 @@ void __interrupt()ISR_interrupt(void) {
             float tension = ADRESL;
             tension = tension * 2;
 
+//            LED = SET;
+//            //------- code capteur ------------
+//
+//            // demande de mesures
+//            i2c_start();
+//            i2c_write((HIH_ADDRESS << 1) | I2C_WRITE);
+//            i2c_stop();
+//
+//            // lecture des mesures effectue
+//            i2c_start();
+//            i2c_write((HIH_ADDRESS << 1) | I2C_READ);
+//            int octet1 = i2c_read();
+//            i2c_ACK();
+//            int octet2 = i2c_read();
+//            i2c_ACK();
+//            int octet3 = i2c_read();
+//            i2c_ACK();
+//            int octet4 = i2c_read();
+//            i2c_NAK();
+//            i2c_stop();
+//
+//            LED = CLEAR;
+
+            // et là normalement tout est dans le SSP1BUF (buffer) avec humidité sur 0x00 et 0x01 ; temp sur 0x02 et 0x03
+
             //////////// calcul buffer à envoyer
             int octet1 = 0b0000000; // humidite
             int octet2 = 0b0000000;
@@ -158,10 +183,10 @@ void __interrupt()ISR_interrupt(void) {
         }
         LED = CLEAR;
     }
-    
+
     WriteSXRegister(REG_IRQ_FLAGS, 0xFF);           // clear flags: writing 1 clears flag
     INTCONbits.INT0IF = CLEAR;     // flag d'interruption efface
-    
+
     SLEEP();
 }
 
