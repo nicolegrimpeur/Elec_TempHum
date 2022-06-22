@@ -11,7 +11,7 @@
 #include "./ressources/switch.h"
 #include "./ressources/communication.h"
 #include "./ressources/config.h"
-
+ 
 
 /*****/
 // CONFIG1H
@@ -75,27 +75,15 @@
 #pragma config EBTRB = OFF      // Boot Block Table Read Protection bit (Boot Block (000000-0007FFh) not protected from table reads executed in other blocks)
 
 
-int taillePayload = 0;
-char rxBuffer[6];
-int res = -1;
-int tour = -1;
-int typeMessage = 0;
-
-
-uint8_t RXNumberOfBytes;        // to store the number of bytes received
-uint8_t codeMessage;
-
 void __interrupt()ISR_interrupt(void) {
     uint8_t reg_val;
 
     reg_val = ReadSXRegister(REG_IRQ_FLAGS);
 
     if ((reg_val & 0x10) != 0x00) {
-        taillePayload = ReadSXRegister(REG_RX_NB_BYTES);
-
         WriteSXRegister(REG_FIFO_ADDR_PTR, ReadSXRegister(REG_FIFO_RX_CURRENT_ADDR));
 
-        //char rxBuffer[6];
+        char rxBuffer[6];
         for (int i = 0; i < 5; ++i) {
             rxBuffer[i] = ReadSXRegister(REG_FIFO);
         }
@@ -112,8 +100,6 @@ void __interrupt()ISR_interrupt(void) {
             etape1[5] = 10;
 
             transmission(etape1, sizeof etape1, -1);
-
-            passageEcoute();
 
             attenteReception();
 
@@ -154,8 +140,6 @@ void __interrupt()ISR_interrupt(void) {
             char tabHum[4];
             snprintf(tabHum, sizeof tabHum, "%f", humidite);
 
-            __delay_ms(200);
-
             char txBuffer[14];
             txBuffer[0] = 0xAD;
             txBuffer[1] = 0x4E;
@@ -167,25 +151,16 @@ void __interrupt()ISR_interrupt(void) {
 
             transmission(txBuffer, 14, tension);
 
-            passageEcoute();
+            uint8_t codeMessage = attenteReception56();
 
-            /*codeMessage = attenteReception();
-
-            if (codeMessage == 6) {
-                LED = SET;
-
+            if (codeMessage == 6)
                 transmission(txBuffer, 14, tension);
-
-                __delay_ms(500);
-
-                LED = CLEAR;
-            }*/
         }
         LED = CLEAR;
     }
-
-    INTCONbits.INT0IF = CLEAR;     // flag d'interruption effacÃ©
+    
     WriteSXRegister(REG_IRQ_FLAGS, 0xFF);           // clear flags: writing 1 clears flag
+    INTCONbits.INT0IF = CLEAR;     // flag d'interruption efface
     
     SLEEP();
 }

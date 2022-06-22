@@ -9,7 +9,7 @@
 #include "../ressources/switch.h"
 
 char attenteReception(void) {
-    char rxBuffer[6];
+    char rxBuffer[5];
     uint8_t reg_val;                // when reading SX1272 registers, stores the content (variable read in main and typically  updated by ReadSXRegister function)
 
     do {
@@ -26,6 +26,50 @@ char attenteReception(void) {
             rxBuffer[i] = ReadSXRegister(REG_FIFO);
         }
     } while (rxBuffer[3] != 7 || (rxBuffer[4] != 2 && rxBuffer[4] != 5 && rxBuffer[4] != 6));
+
+    return rxBuffer[4];
+}
+
+char attenteReception2(void) {
+    char rxBuffer[5];
+    uint8_t reg_val;                // when reading SX1272 registers, stores the content (variable read in main and typically  updated by ReadSXRegister function)
+
+    do {
+        // wait for valid header reception
+        do {
+            reg_val = ReadSXRegister(REG_IRQ_FLAGS);
+        } while ((reg_val & 0x10) == 0x00);
+
+//        taillePayload = ReadSXRegister(REG_RX_NB_BYTES);
+
+        WriteSXRegister(REG_FIFO_ADDR_PTR, ReadSXRegister(REG_FIFO_RX_CURRENT_ADDR));
+
+        for (int i = 0; i < 5; ++i) {
+            rxBuffer[i] = ReadSXRegister(REG_FIFO);
+        }
+    } while (rxBuffer[3] != 7 || (rxBuffer[4] != 2));
+
+    return rxBuffer[4];
+}
+
+char attenteReception56(void) {
+    char rxBuffer[5];
+    uint8_t reg_val;                // when reading SX1272 registers, stores the content (variable read in main and typically  updated by ReadSXRegister function)
+
+    do {
+        // wait for valid header reception
+        do {
+            reg_val = ReadSXRegister(REG_IRQ_FLAGS);
+        } while ((reg_val & 0x10) == 0x00);
+
+//        taillePayload = ReadSXRegister(REG_RX_NB_BYTES);
+
+        WriteSXRegister(REG_FIFO_ADDR_PTR, ReadSXRegister(REG_FIFO_RX_CURRENT_ADDR));
+
+        for (int i = 0; i < 5; ++i) {
+            rxBuffer[i] = ReadSXRegister(REG_FIFO);
+        }
+    } while (rxBuffer[3] != 7 || (rxBuffer[4] != 5 && rxBuffer[4] != 6));
 
     return rxBuffer[4];
 }
@@ -60,7 +104,7 @@ void transmission(char *txBuffer, uint8_t payload, float tension) {
     } while ((reg_val & 0x08) == 0x00);
 
     // delay is required before checking mode: it takes some time to go from TX mode to STDBY mode
-    __delay_ms(200);
+    //__delay_ms(200);
 
     // reset all IRQs
     WriteSXRegister(REG_IRQ_FLAGS, 0xFF);           // clear flags: writing 1 clears flag

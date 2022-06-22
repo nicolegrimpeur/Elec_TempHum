@@ -33,7 +33,8 @@ void initCode(void) {
     // initialize the module
     InitModule();
 
-    INTCON = 0b11111000;    // autorise les interruptions
+    RCONbits.IPEN = SET;
+    INTCON = 0b11010000;    // autorise les interruptions
 //    INTCONbits.GIE = CLEAR;
     
     passageEcoute();

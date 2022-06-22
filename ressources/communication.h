@@ -8,6 +8,8 @@
 #include "general.h"
 
 char attenteReception(void);
+char attenteReception2(void);
+char attenteReception56(void);
 
 void transmission(char*, uint8_t, float);
 

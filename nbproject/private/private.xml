@@ -5,7 +5,7 @@
             <url>main.c</url>
             <bookmark id="1">
                 <name/>
-                <line>126</line>
+                <line>124</line>
                 <key/>
             </bookmark>
         </file>
@@ -15,9 +15,6 @@
             <file>file:/D:/ProjetElec/Elec_TempHum.X/sources/communication.c</file>
             <file>file:/D:/ProjetElec/Elec_TempHum.X/main.c</file>
             <file>file:/D:/ProjetElec/Elec_TempHum.X/sources/SX1272.c</file>
-            <file>file:/D:/ProjetElec/Elec_TempHum.X/sources/RF_LoRa_868_SO.c</file>
-            <file>file:/D:/ProjetElec/Elec_TempHum.X/sources/spi.c</file>
-            <file>file:/D:/ProjetElec/Elec_TempHum.X/ressources/communication.h</file>
         </group>
     </open-files>
 </project-private>
