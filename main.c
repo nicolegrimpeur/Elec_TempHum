@@ -197,11 +197,14 @@ int main(int argc, char **argv) {
     LED = CLEAR;
 
     //SLEEP();
-
+    while (1){
     i2c_start();
     i2c_write((HIH_ADDRESS << 1) | I2C_WRITE);
     i2c_stop();
-    //__delay_ms(2000);
+    NOP();
+    NOP();
+    NOP();
+    __delay_ms(100);
     i2c_start();
     i2c_write((HIH_ADDRESS << 1) | I2C_READ);
     int octet1 = i2c_read();
@@ -213,6 +216,12 @@ int main(int argc, char **argv) {
     int octet4 = i2c_read();
     i2c_NAK();
     i2c_stop();
+    NOP();
+    NOP();
+    NOP();
+    __delay_ms(1000);
+    
+    }
 
     return 0;
 }
