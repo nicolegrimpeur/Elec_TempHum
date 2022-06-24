@@ -201,16 +201,16 @@ int main(int argc, char **argv) {
     i2c_start();
     i2c_write((HIH_ADDRESS << 1) | I2C_WRITE);
     i2c_stop();
-    __delay_ms(2000);
+    //__delay_ms(2000);
     i2c_start();
     i2c_write((HIH_ADDRESS << 1) | I2C_READ);
-//    int octet1 = SSP1BUF;
+    int octet1 = i2c_read();
     i2c_ACK();
-//    int octet2 = SSP1BUF;
+    int octet2 = i2c_read();
     i2c_ACK();
-//    int octet3 = SSP1BUF;
+    int octet3 = i2c_read();
     i2c_ACK();
-//    int octet4 = SSP1BUF;
+    int octet4 = i2c_read();
     i2c_NAK();
     i2c_stop();
 
