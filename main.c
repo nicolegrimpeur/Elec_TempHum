@@ -103,6 +103,11 @@ void __interrupt()ISR_interrupt(void) {
 
             attenteReception();
 
+            // demande de mesures
+//            i2c_start();
+//            i2c_write((HIH_ADDRESS << 1) | I2C_WRITE);
+            //i2c_stop();
+            
             char etape2[5];
             etape2[0] = 0xAD;
             etape2[1] = 0x4E;
@@ -115,29 +120,25 @@ void __interrupt()ISR_interrupt(void) {
             LED = CLEAR;
 
 
-            ADCON0bits.GODONE = 1;         // start conversion
-            while (ADCON0bits.GODONE);      // wait until conversion is finished
-            float tension = ADRESL;
-            tension = tension * 2;
+//            ADCON0bits.GODONE = 1;         // start conversion
+//            while (ADCON0bits.GODONE);      // wait until conversion is finished
+//            float tension = ADRESL;
+//            tension = tension * 2;
+            float tension = 0;
 
 //            LED = SET;
 //            //------- code capteur ------------
 //
-//            // demande de mesures
-//            i2c_start();
-//            i2c_write((HIH_ADDRESS << 1) | I2C_WRITE);
-//            i2c_stop();
-//
 //            // lecture des mesures effectue
-//            i2c_start();
+//            //i2c_start();
 //            i2c_write((HIH_ADDRESS << 1) | I2C_READ);
-//            int octet1 = i2c_read();
+//            int octet1 = SSP1BUF;
 //            i2c_ACK();
-//            int octet2 = i2c_read();
+//            int octet2 = SSP1BUF;
 //            i2c_ACK();
-//            int octet3 = i2c_read();
+//            int octet3 = SSP1BUF;
 //            i2c_ACK();
-//            int octet4 = i2c_read();
+//            int octet4 = SSP1BUF;
 //            i2c_NAK();
 //            i2c_stop();
 //
@@ -195,7 +196,23 @@ int main(int argc, char **argv) {
 
     LED = CLEAR;
 
-    SLEEP();
+    //SLEEP();
+
+    i2c_start();
+    i2c_write((HIH_ADDRESS << 1) | I2C_WRITE);
+    i2c_stop();
+    __delay_ms(2000);
+    i2c_start();
+    i2c_write((HIH_ADDRESS << 1) | I2C_READ);
+//    int octet1 = SSP1BUF;
+    i2c_ACK();
+//    int octet2 = SSP1BUF;
+    i2c_ACK();
+//    int octet3 = SSP1BUF;
+    i2c_ACK();
+//    int octet4 = SSP1BUF;
+    i2c_NAK();
+    i2c_stop();
 
     return 0;
 }
