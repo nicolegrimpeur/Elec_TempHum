@@ -103,11 +103,6 @@ void __interrupt()ISR_interrupt(void) {
 
             attenteReception();
 
-            // demande de mesures
-//            i2c_start();
-//            i2c_write((HIH_ADDRESS << 1) | I2C_WRITE);
-            //i2c_stop();
-            
             char etape2[5];
             etape2[0] = 0xAD;
             etape2[1] = 0x4E;
@@ -115,42 +110,41 @@ void __interrupt()ISR_interrupt(void) {
             etape2[3] = 0x07;
             etape2[4] = 0x03;
 
+            // demande de mesures
+            i2c_start();
+            i2c_write((HIH_ADDRESS << 1) | I2C_WRITE);
+            i2c_stop();
+
             transmission(etape2, sizeof etape2, -1);
 
             LED = CLEAR;
 
 
-//            ADCON0bits.GODONE = 1;         // start conversion
-//            while (ADCON0bits.GODONE);      // wait until conversion is finished
-//            float tension = ADRESL;
-//            tension = tension * 2;
-            float tension = 0;
+            ADCON0bits.GODONE = 1;         // start conversion
+            while (ADCON0bits.GODONE);      // wait until conversion is finished
+            float tension = ADRESL;
+            tension = tension * 2;
 
-//            LED = SET;
-//            //------- code capteur ------------
-//
-//            // lecture des mesures effectue
-//            //i2c_start();
-//            i2c_write((HIH_ADDRESS << 1) | I2C_READ);
-//            int octet1 = SSP1BUF;
-//            i2c_ACK();
-//            int octet2 = SSP1BUF;
-//            i2c_ACK();
-//            int octet3 = SSP1BUF;
-//            i2c_ACK();
-//            int octet4 = SSP1BUF;
-//            i2c_NAK();
-//            i2c_stop();
-//
-//            LED = CLEAR;
+            if (tension < 4)
+                LED = SET;
 
-            // et là normalement tout est dans le SSP1BUF (buffer) avec humidité sur 0x00 et 0x01 ; temp sur 0x02 et 0x03
+
+            __delay_ms(100);
+            i2c_start();
+            i2c_write((HIH_ADDRESS << 1) | I2C_READ);
+            int octet1 = i2c_read();
+            i2c_ACK();
+            int octet2 = i2c_read();
+            i2c_ACK();
+            int octet3 = i2c_read();
+            i2c_ACK();
+            int octet4 = i2c_read();
+            i2c_NAK();
+            i2c_stop();
+
+            // et la normalement tout est dans le SSP1BUF (buffer) avec humidité sur 0x00 et 0x01 ; temp sur 0x02 et 0x03
 
             //////////// calcul buffer à envoyer
-            int octet1 = 0b0000000; // humidite
-            int octet2 = 0b0000000;
-            int octet3 = 0b0000000; // temperature
-            int octet4 = 0b0000000;
 
             int masque = 0b00111111;
             int octet1WithoutStatus = masque & octet1;
@@ -196,32 +190,7 @@ int main(int argc, char **argv) {
 
     LED = CLEAR;
 
-    //SLEEP();
-    while (1){
-    i2c_start();
-    i2c_write((HIH_ADDRESS << 1) | I2C_WRITE);
-    i2c_stop();
-    NOP();
-    NOP();
-    NOP();
-    __delay_ms(100);
-    i2c_start();
-    i2c_write((HIH_ADDRESS << 1) | I2C_READ);
-    int octet1 = i2c_read();
-    i2c_ACK();
-    int octet2 = i2c_read();
-    i2c_ACK();
-    int octet3 = i2c_read();
-    i2c_ACK();
-    int octet4 = i2c_read();
-    i2c_NAK();
-    i2c_stop();
-    NOP();
-    NOP();
-    NOP();
-    __delay_ms(1000);
-    
-    }
+    SLEEP();
 
     return 0;
 }
