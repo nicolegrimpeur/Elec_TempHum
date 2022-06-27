@@ -28,13 +28,13 @@
       <itemPath>sources/communication.c</itemPath>
       <itemPath>sources/config.c</itemPath>
       <itemPath>sources/switch.c</itemPath>
+      <itemPath>main.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
                    projectFiles="false">
       <itemPath>Makefile</itemPath>
     </logicalFolder>
-    <itemPath>main.c</itemPath>
   </logicalFolder>
   <sourceRootList>
     <Elem>.</Elem>
@@ -206,6 +206,8 @@
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.ranges" value="0-1fff"/>
         <property key="poweroptions.powerenable" value="true"/>
+        <property key="programmerToGoFilePath"
+                  value="D:/ProjetElec/Elec_TempHum.X/debug/default/Elec_TempHum_ptg"/>
         <property key="programmerToGoImageName" value="Elec_TempHum_ptg"/>
         <property key="programoptions.donoteraseauxmem" value="false"/>
         <property key="programoptions.eraseb4program" value="true"/>

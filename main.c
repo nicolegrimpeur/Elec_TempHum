@@ -118,18 +118,18 @@ void __interrupt()ISR_interrupt(void) {
             transmission(etape2, sizeof etape2, -1);
 
             LED = CLEAR;
-
-
+            
+            
             ADCON0bits.GODONE = 1;         // start conversion
             while (ADCON0bits.GODONE);      // wait until conversion is finished
             float tension = ADRESL;
             tension = tension * 2;
 
-            if (tension < 4)
+            if (tension < 4.8)
                 LED = SET;
 
 
-            __delay_ms(100);
+            __delay_ms(1000);
             i2c_start();
             i2c_write((HIH_ADDRESS << 1) | I2C_READ);
             int octet1 = i2c_read();
@@ -141,17 +141,24 @@ void __interrupt()ISR_interrupt(void) {
             int octet4 = i2c_read();
             i2c_NAK();
             i2c_stop();
+            NOP();
+            NOP();
+            NOP();
 
             // et la normalement tout est dans le SSP1BUF (buffer) avec humidité sur 0x00 et 0x01 ; temp sur 0x02 et 0x03
 
             //////////// calcul buffer à envoyer
+            int octet1 = 0b00011111; // humidite
+            int octet2 = 0b00100100;
+            int octet3 = 0b01100100; // temperature
+            int octet4 = 0b01010000;
 
             int masque = 0b00111111;
             int octet1WithoutStatus = masque & octet1;
 
-            float humidite = (float) (octet1WithoutStatus * 256 + octet2) / (16384 - 2);
+            float humidite = (float) (octet1WithoutStatus * 256 + octet2) * 100 / (16384 - 2);
 
-            octet4 = octet4 >> 2;
+            octet4 = octet4 / 4;
 
             float temperature = (float) ((octet3 * 64 + octet4) * 165) / (16384 - 2) - 40;
 
@@ -168,6 +175,10 @@ void __interrupt()ISR_interrupt(void) {
             strncat(txBuffer, tabHum, 4);
             strncat(txBuffer, tabTemp, 7);
             ////////////////// fin calcul buffer
+
+            NOP();
+            NOP();
+            NOP();
 
             transmission(txBuffer, 14, tension);
 
@@ -187,7 +198,7 @@ void __interrupt()ISR_interrupt(void) {
 
 int main(int argc, char **argv) {
     initCode();
-
+    
     LED = CLEAR;
 
     SLEEP();
