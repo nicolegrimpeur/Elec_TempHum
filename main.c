@@ -128,17 +128,17 @@ void __interrupt()ISR_interrupt(void) {
             if (tension < 4.8)
                 LED = SET;
 
-
+            int octet1, octet2, octet3, octet4, masque, octet1WithoutStatus;
             __delay_ms(1000);
             i2c_start();
             i2c_write((HIH_ADDRESS << 1) | I2C_READ);
-            int octet1 = i2c_read();
+            octet1 = i2c_read();
             i2c_ACK();
-            int octet2 = i2c_read();
+            octet2 = i2c_read();
             i2c_ACK();
-            int octet3 = i2c_read();
+            octet3 = i2c_read();
             i2c_ACK();
-            int octet4 = i2c_read();
+            octet4 = i2c_read();
             i2c_NAK();
             i2c_stop();
             NOP();
@@ -148,19 +148,19 @@ void __interrupt()ISR_interrupt(void) {
             // et la normalement tout est dans le SSP1BUF (buffer) avec humidité sur 0x00 et 0x01 ; temp sur 0x02 et 0x03
 
             //////////// calcul buffer à envoyer
-            int octet1 = 0b00011111; // humidite
-            int octet2 = 0b00100100;
-            int octet3 = 0b01100100; // temperature
-            int octet4 = 0b01010000;
+//            octet1 = 0b00011111; // humidite
+//            octet2 = 0b00100100;
+//            octet3 = 0b01100100; // temperature
+//            octet4 = 0b01010000;
 
-            int masque = 0b00111111;
-            int octet1WithoutStatus = masque & octet1;
+            masque = 0b00111111;
+            octet1WithoutStatus = masque & octet1;
 
-            float humidite = (float) (octet1WithoutStatus * 256 + octet2) * 100 / (16384 - 2);
+            float humidite = (float) ((octet1WithoutStatus * 256. + octet2) * 100. / (16384. - 2.));
 
             octet4 = octet4 / 4;
 
-            float temperature = (float) ((octet3 * 64 + octet4) * 165) / (16384 - 2) - 40;
+            float temperature = (float) (((octet3 * 64. + octet4) * 165.) / (16384. - 2.) - 40.);
 
             char tabTemp[7];
             snprintf(tabTemp, sizeof tabTemp, "%f", temperature);
