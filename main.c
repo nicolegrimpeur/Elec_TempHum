@@ -75,8 +75,9 @@
 #pragma config EBTRB = OFF      // Boot Block Table Read Protection bit (Boot Block (000000-0007FFh) not protected from table reads executed in other blocks)
 
 
+uint8_t reg_val;
+int octet1, octet2, octet3, octet4, masque, octet1WithoutStatus;
 void __interrupt()ISR_interrupt(void) {
-    uint8_t reg_val;
 
     reg_val = ReadSXRegister(REG_IRQ_FLAGS);
 
@@ -111,47 +112,46 @@ void __interrupt()ISR_interrupt(void) {
             etape2[4] = 0x03;
 
             // demande de mesures
-            i2c_start();
-            i2c_write((HIH_ADDRESS << 1) | I2C_WRITE);
-            i2c_stop();
+//            i2c_start();
+//            i2c_write((HIH_ADDRESS << 1) | I2C_WRITE);
+//            i2c_stop();
 
             transmission(etape2, sizeof etape2, -1);
 
             LED = CLEAR;
-            
-            
+
+
             ADCON0bits.GODONE = 1;         // start conversion
             while (ADCON0bits.GODONE);      // wait until conversion is finished
             float tension = ADRESL;
-            tension = tension * 2;
+            tension = tension * 2 / 20;
 
             if (tension < 4.8)
                 LED = SET;
 
-            int octet1, octet2, octet3, octet4, masque, octet1WithoutStatus;
-            __delay_ms(1000);
-            i2c_start();
-            i2c_write((HIH_ADDRESS << 1) | I2C_READ);
-            octet1 = i2c_read();
-            i2c_ACK();
-            octet2 = i2c_read();
-            i2c_ACK();
-            octet3 = i2c_read();
-            i2c_ACK();
-            octet4 = i2c_read();
-            i2c_NAK();
-            i2c_stop();
-            NOP();
-            NOP();
-            NOP();
+//            __delay_ms(1000);
+//            i2c_start();
+//            i2c_write((HIH_ADDRESS << 1) | I2C_READ);
+//            octet1 = i2c_read();
+//            i2c_ACK();
+//            octet2 = i2c_read();
+//            i2c_ACK();
+//            octet3 = i2c_read();
+//            i2c_ACK();
+//            octet4 = i2c_read();
+//            i2c_NAK();
+//            i2c_stop();
+//            NOP();
+//            NOP();
+//            NOP();
 
             // et la normalement tout est dans le SSP1BUF (buffer) avec humidité sur 0x00 et 0x01 ; temp sur 0x02 et 0x03
 
             //////////// calcul buffer à envoyer
-//            octet1 = 0b00011111; // humidite
-//            octet2 = 0b00100100;
-//            octet3 = 0b01100100; // temperature
-//            octet4 = 0b01010000;
+            octet1 = 0b00011111; // humidite
+            octet2 = 0b00100100;
+            octet3 = 0b01100100; // temperature
+            octet4 = 0b01010000;
 
             masque = 0b00111111;
             octet1WithoutStatus = masque & octet1;
@@ -198,8 +198,200 @@ void __interrupt()ISR_interrupt(void) {
 
 int main(int argc, char **argv) {
     initCode();
-    
+
     LED = CLEAR;
+
+    // demande de mesures
+//    i2c_start();
+//    i2c_write((HIH_ADDRESS << 1) | I2C_WRITE);
+//    i2c_stop();
+
+
+//    ADCON0bits.GODONE = 1;         // start conversion
+//    while (ADCON0bits.GODONE);      // wait until conversion is finished
+//    float tension = ADRESL;
+//    tension = tension * 2;
+//
+//    if (tension < 4.8)
+//        LED = SET;
+
+//    octet1 = 0;
+//    octet2 = 0;
+//    octet3 = 0;
+//    octet4 = 0;
+//
+//    __delay_ms(2000);
+//    i2c_start();
+//    i2c_write((HIH_ADDRESS << 1) | I2C_READ);
+//    octet1 = i2c_read();
+//    i2c_ACK();
+//    octet2 = i2c_read();
+//    i2c_ACK();
+//    octet3 = i2c_read();
+//    i2c_ACK();
+//    octet4 = i2c_read();
+//    i2c_NAK();
+//    i2c_stop();
+//    __delay_ms(2000);
+//    NOP();
+//    NOP();
+//    NOP();
+
+//    int octet1, octet2, octet3, octet4, masque, octet1WithoutStatus;
+//    octet1 = 0b00011111; // humidite
+//    octet2 = 0b00100100;
+//    octet3 = 0b01100100; // temperature
+//    octet4 = 0b01010000;
+//
+//    masque = 0b00111111;
+//    octet1WithoutStatus = masque & octet1;
+//
+//    float humidite = (float) ((octet1WithoutStatus * 256. + octet2) * 100. / (16384. - 2.));
+//
+//    octet4 = octet4 / 4;
+//
+//    float temperature = (float) (((octet3 * 64. + octet4) * 165.) / (16384. - 2.) - 40.);
+//
+//    char tabTemp[7];
+//    snprintf(tabTemp, sizeof tabTemp, "%f", temperature);
+//    char tabHum[4];
+//    snprintf(tabHum, sizeof tabHum, "%f", humidite);
+//
+//    char txBuffer[14];
+//    txBuffer[0] = 0xAD;
+//    txBuffer[1] = 0x4E;
+//    txBuffer[2] = 0x01;
+//    txBuffer[3] = 0x07;
+//    strncat(txBuffer, tabHum, 4);
+//    strncat(txBuffer, tabTemp, 7);
+//    ////////////////// fin calcul buffer
+//
+//    NOP();
+//    NOP();
+//    NOP();
+
+
+//    forever {
+//        reg_val = ReadSXRegister(REG_IRQ_FLAGS);
+//        while ((reg_val & 0x10) == 0x00) {
+//            reg_val = ReadSXRegister(REG_IRQ_FLAGS);
+//        };
+//
+//        WriteSXRegister(REG_FIFO_ADDR_PTR, ReadSXRegister(REG_FIFO_RX_CURRENT_ADDR));
+//
+//        char rxBuffer[6];
+//        for (int i = 0; i < 5; ++i) {
+//            rxBuffer[i] = ReadSXRegister(REG_FIFO);
+//        }
+//
+//        NOP();
+//        NOP();
+//        NOP();
+//
+//        if (rxBuffer[3] == 7 && rxBuffer[4] == 1) {
+//            LED = SET;
+//
+//            char etape1[6];
+//            etape1[0] = 0xAD;
+//            etape1[1] = 0x4E;
+//            etape1[2] = 0x01;
+//            etape1[3] = 0x07;
+//            etape1[4] = 0x07;
+//            etape1[5] = 10;
+//
+//            transmission(etape1, sizeof etape1, -1);
+//
+//            attenteReception();
+//
+//            char etape2[5];
+//            etape2[0] = 0xAD;
+//            etape2[1] = 0x4E;
+//            etape2[2] = 0x01;
+//            etape2[3] = 0x07;
+//            etape2[4] = 0x03;
+//
+//            // demande de mesures
+//            i2c_start();
+//            i2c_write((HIH_ADDRESS << 1) | I2C_WRITE);
+//            i2c_stop();
+//
+//            transmission(etape2, sizeof etape2, -1);
+//
+//            LED = CLEAR;
+//
+//
+//            ADCON0bits.GODONE = 1;         // start conversion
+//            while (ADCON0bits.GODONE);      // wait until conversion is finished
+//            float tension = ADRESL;
+//            tension = tension * 2 / 20;
+//
+////            if (tension < 4.8)
+////                LED = SET;
+//
+//            octet1 = 0;
+//            octet2 = 0;
+//            octet3 = 0;
+//            octet4 = 0;
+//
+//            __delay_ms(1500);
+//            i2c_start();
+//            i2c_write((HIH_ADDRESS << 1) | I2C_READ);
+//            octet1 = i2c_read();
+//            i2c_ACK();
+//            octet2 = i2c_read();
+//            i2c_ACK();
+//            octet3 = i2c_read();
+//            i2c_ACK();
+//            octet4 = i2c_read();
+//            i2c_NAK();
+//            i2c_stop();
+//            NOP();
+//            NOP();
+//            NOP();
+//
+//
+//            //////////// calcul buffer à envoyer
+//            octet1 = 0b00011111; // humidite
+//            octet2 = 0b00100100;
+//            octet3 = 0b01100100; // temperature
+//            octet4 = 0b01010000;
+//
+//            masque = 0b00111111;
+//            octet1WithoutStatus = masque & octet1;
+//
+//            float humidite = (float) ((octet1WithoutStatus * 256. + octet2) * 100. / (16384. - 2.));
+//
+//            octet4 = octet4 / 4;
+//
+//            float temperature = (float) (((octet3 * 64. + octet4) * 165.) / (16384. - 2.) - 40.);
+//
+//            char tabTemp[7];
+//            snprintf(tabTemp, sizeof tabTemp, "%f", temperature);
+//            char tabHum[4];
+//            snprintf(tabHum, sizeof tabHum, "%f", humidite);
+//
+//            char txBuffer[14];
+//            txBuffer[0] = 0xAD;
+//            txBuffer[1] = 0x4E;
+//            txBuffer[2] = 0x01;
+//            txBuffer[3] = 0x07;
+//            strncat(txBuffer, tabHum, 4);
+//            strncat(txBuffer, tabTemp, 7);
+//            ////////////////// fin calcul buffer
+//
+//            NOP();
+//            NOP();
+//            NOP();
+//
+//            transmission(txBuffer, 14, tension);
+//
+//            uint8_t codeMessage = attenteReception56();
+//
+//            if (codeMessage == 6)
+//                transmission(txBuffer, 14, tension);
+//            WriteSXRegister(REG_IRQ_FLAGS, 0xFF);           // clear flags: writing 1 clears flag
+//        }
+//    };
 
     SLEEP();
 

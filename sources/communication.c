@@ -88,8 +88,6 @@ void transmission(char *txBuffer, uint8_t payload, float tension) {
         // donnée du capteur transformé
         WriteSXRegister(REG_FIFO, txBuffer[i]);         // load FIFO with data to transmit
     }
-
-    //uint8_t tensionInt = (uint8_t) tension * 2;
     
     if (tension != -1)
         WriteSXRegister(REG_FIFO, tension);         // load FIFO with data to transmit
